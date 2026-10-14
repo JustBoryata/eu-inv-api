@@ -14,10 +14,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 /**
- * Plain CRUD with no business rules, so no Action classes: the tenant scope
- * on Client already keeps every query inside the user's organisation.
+ * Plain CRUD with almost no business rules, so no Action classes: the tenant
+ * scope on Client already keeps every query inside the user's organisation.
  */
 class ClientController extends Controller
 {
@@ -59,6 +60,11 @@ class ClientController extends Controller
 
     public function destroy(Client $client): Response
     {
+        // The foreign key would refuse anyway, but with a 500. Say why instead.
+        if ($client->invoices()->exists()) {
+            throw new ConflictHttpException('This client has invoices, so it can\'t be deleted.');
+        }
+
         $client->delete();
 
         return response()->noContent();
