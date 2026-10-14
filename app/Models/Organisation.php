@@ -24,4 +24,12 @@ class Organisation extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * @return HasMany<Client, $this>
+     */
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
 }
