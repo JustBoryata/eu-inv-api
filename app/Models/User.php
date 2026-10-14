@@ -13,6 +13,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
 
+/**
+ * organisation_id is NOT NULL with a foreign key, so the relation always exists.
+ *
+ * @property-read Organisation $organisation
+ */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
