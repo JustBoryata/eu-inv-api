@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - app
+        - bootstrap/app.php
+        - config
+        - database
+        - routes
+    # Pest binds $this inside test closures at runtime, which PHPStan can't see.
+    # Tests are checked by running them instead.
