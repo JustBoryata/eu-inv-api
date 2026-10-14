@@ -8,11 +8,15 @@ use App\Models\User;
 use App\Models\VatRate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\ConcurrencyTestCase;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+pest()->extend(ConcurrencyTestCase::class)
+    ->in('Concurrency');
 
 /**
  * Authenticate as a user (a fresh one by default) for the rest of the test.
