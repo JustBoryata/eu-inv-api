@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property InvoiceStatus $status
  * @property CarbonImmutable|null $due_date
+ * @property CarbonImmutable|null $issue_date
+ * @property CarbonImmutable|null $issued_at
+ * @property-read Organisation $organisation
+ * @property-read Client $client
  * @property list<array{rate: string, net: int, vat: int}> $vat_breakdown
  */
 #[Fillable(['client_id', 'due_date', 'notes'])]
@@ -100,6 +104,8 @@ class Invoice extends Model
         return [
             'status' => InvoiceStatus::class,
             'due_date' => 'immutable_date',
+            'issue_date' => 'immutable_date',
+            'issued_at' => 'immutable_datetime',
             'net_total' => 'integer',
             'vat_total' => 'integer',
             'gross_total' => 'integer',

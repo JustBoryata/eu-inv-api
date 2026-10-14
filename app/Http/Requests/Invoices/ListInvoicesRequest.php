@@ -17,6 +17,9 @@ class ListInvoicesRequest extends PaginatedRequest
             ...parent::rules(),
             'status' => ['sometimes', Rule::enum(InvoiceStatus::class)],
             'client_id' => ['sometimes', 'integer'],
+            // Drafts have no issue date, so either filter leaves them out.
+            'issued_from' => ['sometimes', 'date_format:Y-m-d'],
+            'issued_to' => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:issued_from'],
         ];
     }
 
@@ -28,5 +31,15 @@ class ListInvoicesRequest extends PaginatedRequest
     public function clientId(): ?int
     {
         return $this->filled('client_id') ? $this->integer('client_id') : null;
+    }
+
+    public function issuedFrom(): ?string
+    {
+        return $this->filled('issued_from') ? $this->string('issued_from')->value() : null;
+    }
+
+    public function issuedTo(): ?string
+    {
+        return $this->filled('issued_to') ? $this->string('issued_to')->value() : null;
     }
 }

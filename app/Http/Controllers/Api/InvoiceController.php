@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\CreateDraftInvoice;
 use App\Actions\DeleteDraftInvoice;
+use App\Actions\IssueInvoice;
 use App\Actions\UpdateDraftInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Invoices\ListInvoicesRequest;
@@ -25,6 +26,8 @@ class InvoiceController extends Controller
             ->with('client')
             ->when($request->status(), fn ($query, $status) => $query->where('status', $status))
             ->when($request->clientId(), fn ($query, $clientId) => $query->where('client_id', $clientId))
+            ->when($request->issuedFrom(), fn ($query, $from) => $query->where('issue_date', '>=', $from))
+            ->when($request->issuedTo(), fn ($query, $to) => $query->where('issue_date', '<=', $to))
             ->latest('id')
             ->paginate($request->perPage())
             ->withQueryString();
@@ -47,6 +50,13 @@ class InvoiceController extends Controller
     public function update(UpdateInvoiceRequest $request, Invoice $invoice, UpdateDraftInvoice $updateDraft): InvoiceResource
     {
         $invoice = $updateDraft->handle($invoice, $request->invoiceAttributes(), $request->linesOrNull());
+
+        return new InvoiceResource($invoice->load('client', 'lines'));
+    }
+
+    public function issue(Invoice $invoice, IssueInvoice $issueInvoice): InvoiceResource
+    {
+        $invoice = $issueInvoice->handle($invoice);
 
         return new InvoiceResource($invoice->load('client', 'lines'));
     }

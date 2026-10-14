@@ -22,4 +22,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('invoices', InvoiceController::class);
+    Route::post('invoices/{invoice}/issue', [InvoiceController::class, 'issue']);
 });

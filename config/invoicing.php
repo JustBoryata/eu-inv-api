@@ -15,4 +15,18 @@ return [
 
     'supported_countries' => ['BG'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Time zone for invoice dates
+    |--------------------------------------------------------------------------
+    |
+    | Timestamps are stored in UTC, but the issue date printed on an invoice
+    | is the seller's local date: an invoice issued at 00:30 in Sofia is
+    | dated that day, not the day before. One zone is enough while v1
+    | supports one country; more countries need a per-organisation setting.
+    |
+    */
+
+    'timezone' => 'Europe/Sofia',
+
 ];

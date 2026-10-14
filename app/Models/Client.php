@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * A buyer the organisation invoices. organisation_id is deliberately not
  * fillable: it always comes from the signed-in user, never from the request.
+ *
+ * @property-read Organisation $organisation
  */
 #[Fillable(['name', 'vat_number', 'registration_number', 'address', 'country_code', 'email'])]
 class Client extends Model

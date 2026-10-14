@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property string $quantity Decimal with three places, e.g. "2.500".
  * @property string $vat_rate Percentage with two places, e.g. "20.00".
+ * @property-read VatRate $vatRate
  */
 #[Fillable(['description', 'quantity', 'unit_price', 'vat_rate_id'])]
 class InvoiceLine extends Model
