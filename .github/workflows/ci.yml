@@ -86,3 +86,14 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/pest
+
+      # Scramble reads column types from the database, so this runs here and
+      # not in the quality job. Once is enough.
+      - name: Check openapi.json is up to date
+        if: matrix.php == '8.4'
+        env:
+          DB_DATABASE: eu_inv_api_test
+        run: |
+          php artisan migrate --force
+          php artisan scramble:export
+          git diff --exit-code openapi.json || { echo "::error::openapi.json is out of date. Run php artisan scramble:export and commit the result."; exit 1; }
