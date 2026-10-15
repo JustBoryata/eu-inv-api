@@ -19,6 +19,16 @@ use Illuminate\Validation\Rule;
 abstract class InvoiceRequest extends FormRequest
 {
     /**
+     * Rule::exists runs a plain query that skips Eloquent's global scopes, so
+     * both exists rules repeat the tenant filter. Without it a draft could
+     * point at another organisation's client.
+     *
+     * The caps on quantity and unit_price keep quantity × unit_price far below
+     * PHP_INT_MAX.
+     *
+     * The comments on the rules are API docs: Scramble publishes them as the
+     * field descriptions.
+     *
      * @return array<string, list<mixed>>
      */
     protected function invoiceRules(): array
@@ -26,18 +36,19 @@ abstract class InvoiceRequest extends FormRequest
         $organisation = $this->organisation();
 
         return [
-            // Rule::exists runs a plain query that skips Eloquent's global scopes,
-            // so the tenant filter has to be repeated here. Without it a draft
-            // could point at another organisation's client.
-            'client_id' => ['integer', Rule::exists(Client::class, 'id')->where('organisation_id', $organisation->id)],
+            // One of your organisation's clients.
+            'client_id' => ['integer', Rule::exists(Client::class, 'id')->where('organisation_id', $organisation?->id)],
             'due_date' => ['nullable', 'date_format:Y-m-d'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            // Replaces all of the draft's lines.
             'lines' => ['array', 'min:1', 'max:100'],
             'lines.*.description' => ['required', 'string', 'max:500'],
-            // The caps keep quantity × unit_price far below PHP_INT_MAX.
+            // Up to 3 decimal places.
             'lines.*.quantity' => ['required', 'numeric', 'decimal:0,3', 'gt:0', 'max:1000000'],
+            // Net price per unit, in cents.
             'lines.*.unit_price' => ['required', 'integer', 'min:0', 'max:10000000000'],
-            'lines.*.vat_rate_id' => ['required', 'integer', Rule::exists(VatRate::class, 'id')->where('country_code', $organisation->country_code)],
+            // A rate for your organisation's country, from GET /vat-rates.
+            'lines.*.vat_rate_id' => ['required', 'integer', Rule::exists(VatRate::class, 'id')->where('country_code', $organisation?->country_code)],
         ];
     }
 
@@ -74,13 +85,16 @@ abstract class InvoiceRequest extends FormRequest
         ], array_values($lines));
     }
 
-    protected function organisation(): Organisation
+    /**
+     * Every invoice route sits behind auth:sanctum, so this is null only when
+     * rules() runs outside a request, as when Scramble reads it to build the
+     * API docs. The exists rules then filter on null and match nothing, so
+     * they fail closed.
+     */
+    protected function organisation(): ?Organisation
     {
         $user = $this->user();
 
-        // Every invoice route sits behind auth:sanctum.
-        assert($user instanceof User);
-
-        return $user->organisation;
+        return $user instanceof User ? $user->organisation : null;
     }
 }

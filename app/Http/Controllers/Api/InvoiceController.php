@@ -17,6 +17,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Jobs\RenderInvoicePdf;
 use App\Models\Invoice;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Response as DocResponse;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -77,8 +78,10 @@ class InvoiceController extends Controller
     /**
      * The invoice as a PDF, or 202 Accepted while it's still being rendered.
      *
-     * @response 202 array{message: string}
+     * @throws InvoiceNotIssued
      */
+    #[DocResponse(200, 'The PDF file.', mediaType: 'application/pdf', type: 'string', format: 'binary')]
+    #[DocResponse(202, 'Still rendering. Retry after the number of seconds in the `Retry-After` header.', type: 'array{message: string}')]
     public function pdf(Invoice $invoice): StreamedResponse|JsonResponse
     {
         if ($invoice->status === InvoiceStatus::Draft) {

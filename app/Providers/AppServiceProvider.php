@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,5 +31,10 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('register', fn (Request $request) => Limit::perMinute(3)
             ->by((string) $request->ip()));
+
+        // Scramble serves /docs/api only in the local environment unless this
+        // allows it. The docs describe a public API and hold no data, so
+        // everyone may read them.
+        Gate::define('viewApiDocs', fn (?User $user): bool => true);
     }
 }
