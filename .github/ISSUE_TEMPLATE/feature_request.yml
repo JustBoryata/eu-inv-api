@@ -1,0 +1,20 @@
+name: Feature request
+description: Something the API should do that it doesn't yet.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you're trying to do, and why the current API gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you'd like
+  - type: textarea
+    id: legal
+    attributes:
+      label: Legal basis
+      description: If this is about invoicing rules, which law or regulation requires it?
