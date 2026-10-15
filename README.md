@@ -114,11 +114,11 @@ IssueInvoice ─► DB::transaction { lock draft → lock sequence row → next 
 
 Each of these is a GitHub issue:
 
-- Credit notes. An issued invoice is corrected with a credit note, never edited.
-- The legal basis that 0% VAT lines must state, and reverse charge for EU business customers.
-- Multiple currencies (v1 uses EUR, which Bulgaria has used since 2026-01-01), multiple users per organisation, and emailing invoices.
-- VAT number validation against VIES.
-- Production images and a deployment.
+- Credit notes ([#3](https://github.com/JustBoryata/eu-inv-api/issues/3)). An issued invoice is corrected with a credit note, never edited.
+- The legal basis that 0% VAT lines must state ([#4](https://github.com/JustBoryata/eu-inv-api/issues/4)), and reverse charge for EU business customers ([#5](https://github.com/JustBoryata/eu-inv-api/issues/5)).
+- VAT number validation against VIES ([#6](https://github.com/JustBoryata/eu-inv-api/issues/6)).
+- Multiple users per organisation ([#7](https://github.com/JustBoryata/eu-inv-api/issues/7)), multiple currencies ([#8](https://github.com/JustBoryata/eu-inv-api/issues/8); v1 uses EUR, which Bulgaria has used since 2026-01-01), and emailing invoices ([#9](https://github.com/JustBoryata/eu-inv-api/issues/9)).
+- Faster client search ([#10](https://github.com/JustBoryata/eu-inv-api/issues/10)), and production images with a deployment ([#11](https://github.com/JustBoryata/eu-inv-api/issues/11)).
 
 ## License
 
