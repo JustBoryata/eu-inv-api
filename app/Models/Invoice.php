@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $issue_date
  * @property CarbonImmutable|null $issued_at
  * @property CarbonImmutable|null $paid_at
+ * @property string|null $pdf_path Relative to the local disk.
  * @property-read Organisation $organisation
  * @property-read Client $client
  * @property list<array{rate: string, net: int, vat: int}> $vat_breakdown

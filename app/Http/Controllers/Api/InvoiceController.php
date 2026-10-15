@@ -7,17 +7,22 @@ use App\Actions\DeleteDraftInvoice;
 use App\Actions\IssueInvoice;
 use App\Actions\MarkInvoicePaid;
 use App\Actions\UpdateDraftInvoice;
+use App\Enums\InvoiceStatus;
+use App\Exceptions\InvoiceNotIssued;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Invoices\ListInvoicesRequest;
 use App\Http\Requests\Invoices\StoreInvoiceRequest;
 use App\Http\Requests\Invoices\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
+use App\Jobs\RenderInvoicePdf;
 use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoiceController extends Controller
 {
@@ -67,6 +72,31 @@ class InvoiceController extends Controller
         $invoice = $markPaid->handle($invoice);
 
         return new InvoiceResource($invoice->load('client', 'lines'));
+    }
+
+    /**
+     * The invoice as a PDF, or 202 Accepted while it's still being rendered.
+     *
+     * @response 202 array{message: string}
+     */
+    public function pdf(Invoice $invoice): StreamedResponse|JsonResponse
+    {
+        if ($invoice->status === InvoiceStatus::Draft) {
+            throw InvoiceNotIssued::hasNoPdf();
+        }
+
+        $disk = Storage::disk('local');
+
+        if ($invoice->pdf_path === null || ! $disk->exists($invoice->pdf_path)) {
+            // Covers a job that is still queued, one that failed for good, and
+            // a file that went missing. The job is unique per invoice, so
+            // dispatching it on every poll queues it at most once.
+            RenderInvoicePdf::dispatch($invoice);
+
+            return response()->json(['message' => 'The PDF is being rendered. Try again in a few seconds.'], 202, ['Retry-After' => '5']);
+        }
+
+        return $disk->response($invoice->pdf_path, "invoice-{$invoice->number}.pdf", ['Content-Type' => 'application/pdf']);
     }
 
     public function destroy(Invoice $invoice, DeleteDraftInvoice $deleteDraft): Response

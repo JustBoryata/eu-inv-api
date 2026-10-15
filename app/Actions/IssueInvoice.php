@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Enums\InvoiceStatus;
 use App\Exceptions\InvoiceNotDraft;
+use App\Jobs\RenderInvoicePdf;
 use App\Models\Invoice;
 use App\Models\InvoiceSequence;
 use App\Models\Organisation;
@@ -13,7 +14,8 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Turn a draft into a legal document: give it the organisation's next
- * number, freeze its VAT rates and both parties' details, and date it.
+ * number, freeze its VAT rates and both parties' details, date it, and queue
+ * its PDF.
  */
 final class IssueInvoice
 {
@@ -44,6 +46,11 @@ final class IssueInvoice
             $invoice->issued_at = $issuedAt;
             $this->snapshotParties($invoice);
             $invoice->save();
+
+            // afterCommit: the worker must never pick up an invoice that this
+            // transaction then rolls back. That holds even when the caller has
+            // wrapped this action in a transaction of its own.
+            RenderInvoicePdf::dispatch($invoice)->afterCommit();
 
             return $invoice;
         });

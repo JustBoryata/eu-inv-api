@@ -25,6 +25,8 @@ class InvoiceResource extends JsonResource
             'issue_date' => $this->issue_date?->toDateString(),
             'issued_at' => $this->issued_at?->toIso8601String(),
             'paid_at' => $this->paid_at?->toIso8601String(),
+            // False while the PDF job is still queued. Poll GET /pdf, which answers 202 until it's ready.
+            'pdf_ready' => $this->pdf_path !== null,
             'client_id' => $this->client_id,
             'client' => new ClientResource($this->whenLoaded('client')),
             'currency' => $this->currency,

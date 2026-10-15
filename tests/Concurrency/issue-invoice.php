@@ -16,6 +16,9 @@ require __DIR__.'/../../vendor/autoload.php';
 $app = require __DIR__.'/../../bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
+// This test is about numbering. Don't render (and leave behind) a PDF per worker.
+config(['queue.default' => 'null', 'queue.connections.null' => ['driver' => 'null']]);
+
 // Laravel's exception handler would print an uncaught error and still exit
 // with 0, which would make a crashed worker look successful to the test.
 try {
