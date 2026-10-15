@@ -1,6 +1,6 @@
 # Development image only: the source is bind-mounted and nothing is baked in.
 # The production image (multi-stage, no dev dependencies) is part of P4.
-FROM php:8.4-cli
+FROM php:8.5-cli
 
 # install-php-extensions resolves each extension's system libraries for us,
 # which keeps this file short and the image free of build toolchains.
