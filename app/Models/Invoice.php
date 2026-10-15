@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $due_date
  * @property CarbonImmutable|null $issue_date
  * @property CarbonImmutable|null $issued_at
+ * @property CarbonImmutable|null $paid_at
  * @property-read Organisation $organisation
  * @property-read Client $client
  * @property list<array{rate: string, net: int, vat: int}> $vat_breakdown
@@ -106,6 +107,7 @@ class Invoice extends Model
             'due_date' => 'immutable_date',
             'issue_date' => 'immutable_date',
             'issued_at' => 'immutable_datetime',
+            'paid_at' => 'immutable_datetime',
             'net_total' => 'integer',
             'vat_total' => 'integer',
             'gross_total' => 'integer',

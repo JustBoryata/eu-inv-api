@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\CreateDraftInvoice;
 use App\Actions\DeleteDraftInvoice;
 use App\Actions\IssueInvoice;
+use App\Actions\MarkInvoicePaid;
 use App\Actions\UpdateDraftInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Invoices\ListInvoicesRequest;
@@ -57,6 +58,13 @@ class InvoiceController extends Controller
     public function issue(Invoice $invoice, IssueInvoice $issueInvoice): InvoiceResource
     {
         $invoice = $issueInvoice->handle($invoice);
+
+        return new InvoiceResource($invoice->load('client', 'lines'));
+    }
+
+    public function markPaid(Invoice $invoice, MarkInvoicePaid $markPaid): InvoiceResource
+    {
+        $invoice = $markPaid->handle($invoice);
 
         return new InvoiceResource($invoice->load('client', 'lines'));
     }
