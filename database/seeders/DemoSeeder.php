@@ -86,7 +86,7 @@ final class DemoSeeder extends Seeder
 
         $issued = $createDraft->handle($organisation, ['client_id' => $bakery->id, 'due_date' => now()->addDays(14)->toDateString(), 'notes' => 'Плащане по банков път. / Payment by bank transfer.'], [
             ['description' => 'Поддръжка, часове / Maintenance, hours', 'quantity' => '6.5', 'unit_price' => 4500, 'vat_rate_id' => $standard],
-            ['description' => 'Печатно ръководство / Printed handbook', 'quantity' => '3', 'unit_price' => 2990, 'vat_rate_id' => $reduced],
+            ['description' => 'Книга „Основи на уеб разработката“ / Book: Web development basics', 'quantity' => '3', 'unit_price' => 2990, 'vat_rate_id' => $reduced],
         ]);
         $issue->handle($issued);
 
