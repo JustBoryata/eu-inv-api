@@ -12,6 +12,8 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class VatRateController extends Controller
 {
     /**
+     * List VAT rates
+     *
      * The rates an invoice line can use: those of the organisation's country.
      */
     public function index(#[CurrentUser] User $user): AnonymousResourceCollection

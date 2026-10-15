@@ -17,6 +17,11 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    /**
+     * Register
+     *
+     * Creates an organisation (the tenant) and its first user, and returns a bearer token.
+     */
     public function register(RegisterRequest $request, RegisterOrganisation $registerOrganisation): JsonResponse
     {
         $user = $registerOrganisation->handle($request->organisationData(), $request->ownerData());
@@ -24,6 +29,11 @@ class AuthController extends Controller
         return $this->respondWithToken($user, $request->string('device_name')->value(), 201);
     }
 
+    /**
+     * Log in
+     *
+     * Returns a new bearer token. Tokens expire after 7 days.
+     */
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::query()->where('email', $request->string('email')->value())->first();
@@ -42,6 +52,11 @@ class AuthController extends Controller
         return $this->respondWithToken($user, $request->string('device_name')->value(), 200);
     }
 
+    /**
+     * Log out
+     *
+     * Revokes the token used for this request. Other devices stay signed in.
+     */
     public function logout(#[CurrentUser] User $user): Response
     {
         // Revokes only the token used for this request; other devices stay signed in.
@@ -50,6 +65,9 @@ class AuthController extends Controller
         return response()->noContent();
     }
 
+    /**
+     * Current user
+     */
     public function me(#[CurrentUser] User $user): UserResource
     {
         return new UserResource($user->load('organisation'));

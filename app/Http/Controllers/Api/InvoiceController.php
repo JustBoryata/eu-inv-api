@@ -27,6 +27,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoiceController extends Controller
 {
+    /**
+     * List invoices
+     */
     public function index(ListInvoicesRequest $request): AnonymousResourceCollection
     {
         $invoices = Invoice::query()
@@ -42,6 +45,11 @@ class InvoiceController extends Controller
         return InvoiceResource::collection($invoices);
     }
 
+    /**
+     * Create a draft
+     *
+     * A draft has no number. Numbers are assigned when the invoice is issued, so deleting a draft never leaves a gap.
+     */
     public function store(StoreInvoiceRequest $request, CreateDraftInvoice $createDraft, #[CurrentUser] User $user): JsonResponse
     {
         $invoice = $createDraft->handle($user->organisation, $request->invoiceAttributes(), $request->linesData());
@@ -49,11 +57,19 @@ class InvoiceController extends Controller
         return (new InvoiceResource($invoice->load('client')))->response()->setStatusCode(201);
     }
 
+    /**
+     * Show an invoice
+     */
     public function show(Invoice $invoice): InvoiceResource
     {
         return new InvoiceResource($invoice->load('client', 'lines'));
     }
 
+    /**
+     * Update a draft
+     *
+     * Sending `lines` replaces all of them. Issued and paid invoices answer 409.
+     */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice, UpdateDraftInvoice $updateDraft): InvoiceResource
     {
         $invoice = $updateDraft->handle($invoice, $request->invoiceAttributes(), $request->linesOrNull());
@@ -61,6 +77,11 @@ class InvoiceController extends Controller
         return new InvoiceResource($invoice->load('client', 'lines'));
     }
 
+    /**
+     * Issue an invoice
+     *
+     * Assigns the next gap-free number for your organisation, freezes the seller, buyer and VAT rates, dates the invoice in Sofia time and queues its PDF.
+     */
     public function issue(Invoice $invoice, IssueInvoice $issueInvoice): InvoiceResource
     {
         $invoice = $issueInvoice->handle($invoice);
@@ -68,6 +89,11 @@ class InvoiceController extends Controller
         return new InvoiceResource($invoice->load('client', 'lines'));
     }
 
+    /**
+     * Mark as paid
+     *
+     * Only issued invoices can be marked as paid.
+     */
     public function markPaid(Invoice $invoice, MarkInvoicePaid $markPaid): InvoiceResource
     {
         $invoice = $markPaid->handle($invoice);
@@ -76,7 +102,9 @@ class InvoiceController extends Controller
     }
 
     /**
-     * The invoice as a PDF, or 202 Accepted while it's still being rendered.
+     * Download the PDF
+     *
+     * Answers 202 Accepted while the PDF is still being rendered. Drafts have no PDF (409).
      *
      * @throws InvoiceNotIssued
      */
@@ -102,6 +130,11 @@ class InvoiceController extends Controller
         return $disk->response($invoice->pdf_path, "invoice-{$invoice->number}.pdf", ['Content-Type' => 'application/pdf']);
     }
 
+    /**
+     * Delete a draft
+     *
+     * Issued and paid invoices answer 409. Correcting an issued invoice needs a credit note, which v0.1.0 does not support yet.
+     */
     public function destroy(Invoice $invoice, DeleteDraftInvoice $deleteDraft): Response
     {
         $deleteDraft->handle($invoice);

@@ -22,6 +22,9 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
  */
 class ClientController extends Controller
 {
+    /**
+     * List clients
+     */
     public function index(ListClientsRequest $request): AnonymousResourceCollection
     {
         $clients = Client::query()
@@ -37,6 +40,9 @@ class ClientController extends Controller
         return ClientResource::collection($clients);
     }
 
+    /**
+     * Create a client
+     */
     public function store(StoreClientRequest $request, #[CurrentUser] User $user): JsonResponse
     {
         $client = new Client($request->validated());
@@ -46,11 +52,17 @@ class ClientController extends Controller
         return (new ClientResource($client))->response()->setStatusCode(201);
     }
 
+    /**
+     * Show a client
+     */
     public function show(Client $client): ClientResource
     {
         return new ClientResource($client);
     }
 
+    /**
+     * Update a client
+     */
     public function update(UpdateClientRequest $request, Client $client): ClientResource
     {
         $client->update($request->validated());
@@ -58,6 +70,11 @@ class ClientController extends Controller
         return new ClientResource($client);
     }
 
+    /**
+     * Delete a client
+     *
+     * A client that has invoices cannot be deleted (409).
+     */
     public function destroy(Client $client): Response
     {
         // The foreign key would refuse anyway, but with a 500. Say why instead.

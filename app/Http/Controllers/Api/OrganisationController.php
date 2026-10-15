@@ -14,11 +14,19 @@ use Illuminate\Container\Attributes\CurrentUser;
  */
 class OrganisationController extends Controller
 {
+    /**
+     * Show your organisation
+     */
     public function show(#[CurrentUser] User $user): OrganisationResource
     {
         return new OrganisationResource($user->organisation);
     }
 
+    /**
+     * Update your organisation
+     *
+     * Issuing an invoice needs the registration number (EIK) and address, which registration does not ask for.
+     */
     public function update(UpdateOrganisationRequest $request, #[CurrentUser] User $user): OrganisationResource
     {
         $organisation = $user->organisation;

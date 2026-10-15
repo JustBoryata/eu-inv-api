@@ -19,6 +19,8 @@
         "/auth/register": {
             "post": {
                 "operationId": "auth.register",
+                "description": "Creates an organisation (the tenant) and its first user, and returns a bearer token.",
+                "summary": "Register",
                 "tags": [
                     "Auth"
                 ],
@@ -75,6 +77,8 @@
         "/auth/login": {
             "post": {
                 "operationId": "auth.login",
+                "description": "Returns a new bearer token. Tokens expire after 7 days.",
+                "summary": "Log in",
                 "tags": [
                     "Auth"
                 ],
@@ -131,6 +135,8 @@
         "/auth/logout": {
             "post": {
                 "operationId": "auth.logout",
+                "description": "Revokes the token used for this request. Other devices stay signed in.",
+                "summary": "Log out",
                 "tags": [
                     "Auth"
                 ],
@@ -147,6 +153,7 @@
         "/me": {
             "get": {
                 "operationId": "auth.me",
+                "summary": "Current user",
                 "tags": [
                     "Auth"
                 ],
@@ -188,6 +195,7 @@
         "/clients": {
             "get": {
                 "operationId": "clients.index",
+                "summary": "List clients",
                 "tags": [
                     "Client"
                 ],
@@ -364,6 +372,7 @@
             },
             "post": {
                 "operationId": "clients.store",
+                "summary": "Create a client",
                 "tags": [
                     "Client"
                 ],
@@ -408,6 +417,7 @@
         "/clients/{client}": {
             "get": {
                 "operationId": "clients.show",
+                "summary": "Show a client",
                 "tags": [
                     "Client"
                 ],
@@ -451,6 +461,7 @@
             },
             "put": {
                 "operationId": "clients.update",
+                "summary": "Update a client",
                 "tags": [
                     "Client"
                 ],
@@ -506,6 +517,8 @@
             },
             "delete": {
                 "operationId": "clients.destroy",
+                "description": "A client that has invoices cannot be deleted (409).",
+                "summary": "Delete a client",
                 "tags": [
                     "Client"
                 ],
@@ -555,6 +568,7 @@
         "/invoices": {
             "get": {
                 "operationId": "invoices.index",
+                "summary": "List invoices",
                 "tags": [
                     "Invoice"
                 ],
@@ -761,6 +775,8 @@
             },
             "post": {
                 "operationId": "invoices.store",
+                "description": "A draft has no number. Numbers are assigned when the invoice is issued, so deleting a draft never leaves a gap.",
+                "summary": "Create a draft",
                 "tags": [
                     "Invoice"
                 ],
@@ -815,6 +831,7 @@
         "/invoices/{invoice}": {
             "get": {
                 "operationId": "invoices.show",
+                "summary": "Show an invoice",
                 "tags": [
                     "Invoice"
                 ],
@@ -869,6 +886,8 @@
             },
             "put": {
                 "operationId": "invoices.update",
+                "description": "Sending `lines` replaces all of them. Issued and paid invoices answer 409.",
+                "summary": "Update a draft",
                 "tags": [
                     "Invoice"
                 ],
@@ -954,6 +973,8 @@
             },
             "delete": {
                 "operationId": "invoices.destroy",
+                "description": "Issued and paid invoices answer 409. Correcting an issued invoice needs a credit note, which v0.1.0 does not support yet.",
+                "summary": "Delete a draft",
                 "tags": [
                     "Invoice"
                 ],
@@ -1003,6 +1024,8 @@
         "/invoices/{invoice}/issue": {
             "post": {
                 "operationId": "invoice.issue",
+                "description": "Assigns the next gap-free number for your organisation, freezes the seller, buyer and VAT rates, dates the invoice in Sofia time and queues its PDF.",
+                "summary": "Issue an invoice",
                 "tags": [
                     "Invoice"
                 ],
@@ -1081,6 +1104,8 @@
         "/invoices/{invoice}/mark-paid": {
             "post": {
                 "operationId": "invoice.markPaid",
+                "description": "Only issued invoices can be marked as paid.",
+                "summary": "Mark as paid",
                 "tags": [
                     "Invoice"
                 ],
@@ -1156,7 +1181,8 @@
         "/invoices/{invoice}/pdf": {
             "get": {
                 "operationId": "invoice.pdf",
-                "summary": "The invoice as a PDF, or 202 Accepted while it's still being rendered",
+                "description": "Answers 202 Accepted while the PDF is still being rendered. Drafts have no PDF (409).",
+                "summary": "Download the PDF",
                 "tags": [
                     "Invoice"
                 ],
@@ -1251,6 +1277,7 @@
         "/organisation": {
             "get": {
                 "operationId": "organisation.show",
+                "summary": "Show your organisation",
                 "tags": [
                     "Organisation"
                 ],
@@ -1280,6 +1307,8 @@
             },
             "patch": {
                 "operationId": "organisation.update",
+                "description": "Issuing an invoice needs the registration number (EIK) and address, which registration does not ask for.",
+                "summary": "Update your organisation",
                 "tags": [
                     "Organisation"
                 ],
@@ -1323,7 +1352,8 @@
         "/vat-rates": {
             "get": {
                 "operationId": "vatRate.index",
-                "summary": "The rates an invoice line can use: those of the organisation's country",
+                "description": "The rates an invoice line can use: those of the organisation's country.",
+                "summary": "List VAT rates",
                 "tags": [
                     "VatRate"
                 ],
