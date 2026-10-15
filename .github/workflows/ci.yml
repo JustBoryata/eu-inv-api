@@ -15,7 +15,7 @@ concurrency:
 jobs:
   quality:
     name: Pint and Larastan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 
@@ -35,7 +35,7 @@ jobs:
 
   tests:
     name: Tests (PHP ${{ matrix.php }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
