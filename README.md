@@ -83,6 +83,10 @@ docker compose exec app composer lint      # Pint
 
 The full OpenAPI 3.1 document is generated with [Scramble](https://scramble.dedoc.co) and committed as [`openapi.json`](openapi.json). CI fails if it drifts from the code.
 
+### CORS
+
+Browsers can only call the API from origins listed in `CORS_ALLOWED_ORIGINS` (comma-separated, for example `https://app.example.com,http://localhost:5173`). It is empty by default, which blocks all cross-origin browser requests; curl and server-side clients are not affected. Only `GET`, `POST`, `PUT`, `PATCH` and `DELETE` with the `Authorization`, `Content-Type` and `Accept` headers are allowed, and `Retry-After` is exposed so a browser can poll `GET /pdf`.
+
 ## Architecture
 
 ```
